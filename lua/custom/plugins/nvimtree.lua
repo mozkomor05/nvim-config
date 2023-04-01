@@ -31,8 +31,34 @@ return {
 		{ '<leader>nt', function() require('nvim-tree.api').tree.toggle(false, true) end, desc = '[N]vimTree [T]oggle' },
 	},
 	config = function()
-		require('nvim-tree').setup({})
+		local lib = require("nvim-tree.lib")
 		local api = require('nvim-tree.api')
+
+		local git_add = function()
+			local node = lib.get_node_at_cursor()
+			local gs = node.git_status.file
+
+			-- If the file is untracked, unstaged or partially staged, we stage it
+			if gs == "??" or gs == "MM" or gs == "AM" or gs == " M" then
+				vim.cmd("silent !git add " .. node.absolute_path)
+
+				-- If the file is staged, we unstage
+			elseif gs == "M " or gs == "A " then
+				vim.cmd("silent !git restore --staged " .. node.absolute_path)
+			end
+
+			lib.refresh_tree()
+		end
+		local on_attach = function(bufnr)
+			api.config.mappings.default_on_attach(bufnr)
+
+			vim.keymap.set('n', 'ga', git_add, { buffer = bufnr })
+		end
+
+
+		require('nvim-tree').setup({
+			on_attach = on_attach,
+		})
 
 		local function tab_win_closed(winnr)
 			local tabnr = vim.api.nvim_win_get_tabpage(winnr)
@@ -43,7 +69,7 @@ return {
 			if buf_info.name:match(".*NvimTree_%d*$") then -- close buffer was nvim tree
 				-- Close all nvim tree on :q
 				if not vim.tbl_isempty(tab_bufs) then -- and was not the last window (not closed automatically by code below)
-					api.tree.close()
+				api.tree.close()
 				end
 			else                                         -- else closed buffer was normal buffer
 				if #tab_bufs == 1 then                   -- if there is only 1 buffer left in the tab
