@@ -31,6 +31,7 @@ vim.api.nvim_create_autocmd('FileType', {
 return {
 	'romgrk/barbar.nvim',
 	dependencies = 'nvim-tree/nvim-web-devicons',
+	cond = not vim.g.started_by_firenvim,
 	config = function()
 		require('barbar').setup({
 			icons = {
