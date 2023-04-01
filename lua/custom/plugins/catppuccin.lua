@@ -2,4 +2,11 @@
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
-return {}
+return { -- Catppuccin theme
+	'catppuccin/nvim',
+	name = 'catppuccin',
+	config = function()
+		vim.cmd.colorscheme 'catppuccin-mocha'
+	end,
+}
+
