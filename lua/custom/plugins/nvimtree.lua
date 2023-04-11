@@ -21,11 +21,6 @@ return {
 		'nvim-tree/nvim-web-devicons'
 	},
 	cond = not vim.g.started_by_firenvim,
-	keys = {
-		{ '<leader>nf', vim.cmd.NvimTreeFocus,												desc = '[N]vimTree [F]ocus' },
-		{ '<leader>no', vim.cmd.NvimTreeFindFile,											desc = '[N]vimTree [O]pen current file' },
-		{ '<leader>nt', function() require('nvim-tree.api').tree.toggle(false, true) end,	desc = '[N]vimTree [T]oggle' },
-	},
 	config = function()
 		local lib = require('nvim-tree.lib')
 		local api = require('nvim-tree.api')
@@ -65,5 +60,9 @@ return {
 			disable_netrw = false,
 			hijack_netrw = true,
 		})
+
+		vim.keymap.set('n', '<leader>nf', vim.cmd.NvimTreeFocus, { desc = '[N]vimTree [F]ocus' })
+		vim.keymap.set('n', '<leader>no', vim.cmd.NvimTreeFindFile, { desc = '[N]vimTree [O]pen current file' })
+		vim.keymap.set('n', '<leader>nt', function() require('nvim-tree.api').tree.toggle(false, true) end, { desc = '[N]vimTree [T]oggle' })
 	end
 }

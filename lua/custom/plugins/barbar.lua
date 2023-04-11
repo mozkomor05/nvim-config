@@ -1,33 +1,3 @@
-vim.api.nvim_create_autocmd('FileType', {
-	callback = function(tbl)
-		local set_offset = require('barbar.api').set_offset
-
-		local bufwinid
-		local last_width
-		local autocmd = vim.api.nvim_create_autocmd('WinScrolled', {
-			callback = function()
-				bufwinid = bufwinid or vim.fn.bufwinid(tbl.buf)
-
-				local width = vim.api.nvim_win_get_width(bufwinid)
-				if width ~= last_width then
-					set_offset(width, 'File Tree')
-					last_width = width
-				end
-			end,
-		})
-
-		vim.api.nvim_create_autocmd('BufWipeout', {
-			buffer = tbl.buf,
-			callback = function()
-				vim.api.nvim_del_autocmd(autocmd)
-				set_offset(0)
-			end,
-			once = true,
-		})
-	end,
-	pattern = 'NvimTree', -- or any other filetree's `ft`
-})
-
 return {
 	'romgrk/barbar.nvim',
 	dependencies = 'nvim-tree/nvim-web-devicons',
@@ -47,6 +17,12 @@ return {
 				modified = { button = '●' },
 				pinned = { button = '車' },
 			},
+
+			sidebar_filetypes = {
+				NvimTree = { event = 'BufWinLeave', text = 'File Tree'},
+				undotree = { text = 'Undo Tree' },
+
+			}
 		})
 
 		vim.keymap.set('n', '<A-j>', vim.cmd.BufferPrevious)
@@ -63,6 +39,7 @@ return {
 		vim.keymap.set('n', '<A-8>', '<Cmd>BufferGoto 8<CR>')
 		vim.keymap.set('n', '<A-9>', '<Cmd>BufferGoto 9<CR>')
 		vim.keymap.set('n', '<A-0>', vim.cmd.BufferLast)
+		vim.keymap.set('n', '<A-c>', vim.cmd.BufferClose)
 		vim.keymap.set('n', '<A-p>', vim.cmd.BufferPin)
 		vim.keymap.set('n', '<A-o>', vim.cmd.BufferPick)
 		vim.keymap.set('n', '<A-q>', vim.cmd.BufferClose)
