@@ -26,7 +26,9 @@ return {
 		})
 
 		vim.keymap.set('n', '<A-j>', vim.cmd.BufferPrevious)
+		vim.keymap.set('n', '<A-h>', vim.cmd.BufferPrevious)
 		vim.keymap.set('n', '<A-k>', vim.cmd.BufferNext)
+		vim.keymap.set('n', '<A-l>', vim.cmd.BufferNext)
 		vim.keymap.set('n', '<A-,>', vim.cmd.BufferMovePrevious)
 		vim.keymap.set('n', '<A-.>', vim.cmd.BufferMoveNext)
 		vim.keymap.set('n', '<A-1>', '<Cmd>BufferGoto 1<CR>')
