@@ -1,6 +1,6 @@
 return {
-	'andweeb/presence.nvim',
-	opts = {
-		main_image = 'file',
-	},
+  'andweeb/presence.nvim',
+  opts = {
+    main_image = 'file',
+  },
 }

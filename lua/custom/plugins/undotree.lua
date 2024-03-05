@@ -1,6 +1,8 @@
 return {
-	'mbbill/undotree',
-	config = function()
-		vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle [U]dotree' })
-	end
+  'jiaoshijie/undotree',
+  dependencies = 'nvim-lua/plenary.nvim',
+  opts = {},
+  keys = {
+    { '<leader>u', "<cmd>lua require('undotree').toggle()<cr>", desc = 'Toggle [U]dotree' },
+  },
 }
