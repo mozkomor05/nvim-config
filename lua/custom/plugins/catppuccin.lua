@@ -5,16 +5,19 @@
 return { -- Catppuccin theme
   'catppuccin/nvim',
   name = 'catppuccin',
+  cond = function()
+    return vim.fn.getenv 'TERM' ~= 'linux'
+  end,
+  priority = 1000,
   config = function()
     require('catppuccin').setup {
       flavour = 'mocha',
-      -- transparent_background = true,
+      term_colors = true,
       integrations = {
         cmp = true,
         nvimtree = true,
         telescope = true,
         which_key = true,
-        barbar = true,
         treesitter = true,
         fidget = true,
         indent_blankline = {
