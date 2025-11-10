@@ -1,11 +1,14 @@
+-- Arduino Development
+-- Arduino plugin for compilation and upload
+
 return {
   'stevearc/vim-arduino',
+  ft = 'arduino',
   config = function()
     local nmap = function(keys, func, desc)
       if desc then
         desc = 'Arduino: ' .. desc
       end
-
       vim.keymap.set('n', keys, func, { desc = desc })
     end
 
