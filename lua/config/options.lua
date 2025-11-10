@@ -34,7 +34,9 @@ vim.o.tabstop = 2
 
 -- Undo History
 vim.o.undofile = true
-vim.o.undodir = os.getenv 'HOME' .. '/.undodir'
+local undodir = os.getenv 'HOME' .. '/.undodir'
+vim.fn.mkdir(undodir, 'p')
+vim.o.undodir = undodir
 vim.o.undolevels = 10000
 
 -- Search
@@ -87,7 +89,7 @@ vim.o.backup = false
 vim.o.shortmess = vim.o.shortmess .. 'c' -- Don't show completion messages
 
 -- Performance
-vim.o.lazyredraw = false -- Don't redraw while executing macros (good for performance)
+vim.o.lazyredraw = false -- True to not redraw while executing macros (performance), False for better UX
 
 -- File encoding
 vim.o.fileencoding = 'utf-8'
