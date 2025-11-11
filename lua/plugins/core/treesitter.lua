@@ -30,7 +30,8 @@ return {
     auto_install = true,
     highlight = {
       enable = true,
-      additional_vim_regex_highlighting = { 'ruby' },
+      disable = { 'latex' },
+      additional_vim_regex_highlighting = { 'latex', 'markdown', 'ruby' },
     },
     indent = { enable = true, disable = { 'ruby' } },
     incremental_selection = {

@@ -96,3 +96,6 @@ vim.o.fileencoding = 'utf-8'
 
 -- Better formatting
 vim.o.formatoptions = 'jcroqlnt' -- tcqj
+
+-- Spell
+vim.o.spelllang = 'en,cs'
