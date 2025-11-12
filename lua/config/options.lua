@@ -21,8 +21,14 @@ vim.o.showmode = false
 -- Colors
 vim.o.termguicolors = true
 
+-- In SSH, use OSC52 clipboard
+if os.getenv 'SSH_TTY' ~= nil then
+  vim.g.clipboard = 'osc52'
+end
+
+-- System Clipboard
 vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
+  vim.opt.clipboard = 'unnamedplus'
 end)
 
 -- Indentation
