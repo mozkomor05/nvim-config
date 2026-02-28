@@ -12,11 +12,6 @@ return {
     opts = {},
   },
 
-  -- TODO: test
-  -- BUG: i dont know
-  -- @TODO: sth
-  -- WARNING: WHY DOESNT IT WORK BROO
-
   -- Todo Comments - Highlight and search for todo comments
   {
     'folke/todo-comments.nvim',
@@ -65,6 +60,7 @@ return {
   -- Copilot - AI pair programming
   {
     'zbirenbaum/copilot.lua',
+    dependencies = { 'copilotlsp-nvim/copilot-lsp' },
     cmd = 'Copilot',
     event = 'InsertEnter',
     opts = {
@@ -81,7 +77,7 @@ return {
       },
       filetypes = {
         markdown = true,
-        help = false,
+        yaml = true,
       },
     },
   },

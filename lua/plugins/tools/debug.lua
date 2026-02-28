@@ -48,18 +48,18 @@ return {
       desc = 'Debug: Step Out',
     },
     {
-      '<leader>b',
+      '<leader>db',
       function()
         require('dap').toggle_breakpoint()
       end,
-      desc = 'Debug: Toggle Breakpoint',
+      desc = 'Debug: Toggle [B]reakpoint',
     },
     {
-      '<leader>B',
+      '<leader>dB',
       function()
         require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
       end,
-      desc = 'Debug: Set Breakpoint',
+      desc = 'Debug: Set [B]reakpoint',
     },
     -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
     {

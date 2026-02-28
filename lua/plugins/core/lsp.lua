@@ -144,6 +144,9 @@ return {
           end,
         },
       }
+
+      -- Non-Mason LSP servers
+      vim.lsp.enable('prolog_ls')
     end,
   },
 
