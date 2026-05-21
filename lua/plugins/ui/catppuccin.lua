@@ -4,10 +4,8 @@
 return {
   'catppuccin/nvim',
   name = 'catppuccin',
+  lazy = false,
   priority = 1000,
-  cond = function()
-    return vim.fn.getenv 'TERM' ~= 'linux'
-  end,
   opts = {
     flavour = 'mocha',
     term_colors = true,
@@ -18,7 +16,7 @@ return {
       percentage = 0.15,
     },
     integrations = {
-      cmp = true,
+      blink_cmp = true,
       nvimtree = true,
       telescope = {
         enabled = true,

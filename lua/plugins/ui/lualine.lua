@@ -3,11 +3,11 @@
 
 return {
   'nvim-lualine/lualine.nvim',
-  dependencies = { 'nvim-tree/nvim-web-devicons' },
+  dependencies = { 'nvim-tree/nvim-web-devicons', 'catppuccin/nvim' },
   event = 'VeryLazy',
   opts = {
     options = {
-      theme = 'catppuccin',
+      theme = 'catppuccin-mocha',
       icons_enabled = vim.g.have_nerd_font,
       component_separators = '|',
       section_separators = '',

@@ -47,9 +47,19 @@ return { -- Useful plugin to show you pending keybinds.
 
     -- Document existing key chains
     spec = {
-      { '<leader>s', group = '[S]earch' },
-      { '<leader>t', group = '[T]oggle' },
-      { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+      { '<leader>s',     group = '[S]earch',     mode = { 'n', 'v' } },
+      { '<leader>t',     group = '[T]oggle' },
+      { '<leader>h',     group = 'Git [H]unk',   mode = { 'n', 'v' } },
+      { '<leader>b',     group = '[B]uffer' },
+      { '<leader>w',     group = '[W]indow' },
+      { '<leader>d',     group = '[D]ebug' },
+      { '<leader>n',     group = '[N]vim Tree' },
+      { '<leader>c',     group = '[C]ode' },
+      { '<leader>g',     group = '[G]it' },
+      { '<leader>m',     group = '[M]arkdown' },
+      { '<leader>a',     group = '[A]rduino' },
+      { '<leader><tab>', group = '[T]abs' },
+      { 'gr',            group = 'LSP Actions' },
     },
   },
 }

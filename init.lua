@@ -11,6 +11,9 @@
 --   lua/plugins/lang/ - Language-specific plugins
 -- ============================================================================
 
+-- Enable Lua module caching for faster startup (must be first)
+vim.loader.enable()
+
 -- Load core configuration
 require 'config.options' -- Vim options and settings
 require 'config.lazy' -- Plugin manager setup

@@ -1,14 +1,11 @@
 -- Markdown Support
--- Markdown preview plugin
+-- Markdown preview (maintained fork of iamcco/markdown-preview.nvim)
 
 return {
-  'iamcco/markdown-preview.nvim',
+  'selimacerbas/markdown-preview.nvim',
+  dependencies = { 'selimacerbas/live-server.nvim' },
   cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-  build = 'cd app && yarn install',
   ft = 'markdown',
-  init = function()
-    vim.g.mkdp_filetypes = { 'markdown' }
-  end,
   keys = {
     { '<leader>mp', '<cmd>MarkdownPreviewToggle<cr>', desc = '[M]arkdown [P]review' },
   },

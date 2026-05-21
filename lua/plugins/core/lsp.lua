@@ -14,8 +14,6 @@ return {
       -- Useful status updates for LSP
       { 'j-hui/fidget.nvim', opts = {} },
 
-      -- Allows extra capabilities provided by blink.cmp
-      'saghen/blink.cmp',
     },
     config = function()
       -- LSP Attach Handler
@@ -73,9 +71,10 @@ return {
 
       -- Diagnostic Configuration
       vim.diagnostic.config {
+        update_in_insert = false,
         severity_sort = true,
         float = { border = 'rounded', source = 'if_many' },
-        underline = { severity = vim.diagnostic.severity.ERROR },
+        underline = { severity = { min = vim.diagnostic.severity.WARN } },
         signs = vim.g.have_nerd_font and {
           text = {
             [vim.diagnostic.severity.ERROR] = '󰅚 ',
@@ -84,25 +83,18 @@ return {
             [vim.diagnostic.severity.HINT] = '󰌶 ',
           },
         } or {},
-        virtual_text = {
-          source = 'if_many',
-          spacing = 2,
-          format = function(diagnostic)
-            local diagnostic_message = {
-              [vim.diagnostic.severity.ERROR] = diagnostic.message,
-              [vim.diagnostic.severity.WARN] = diagnostic.message,
-              [vim.diagnostic.severity.INFO] = diagnostic.message,
-              [vim.diagnostic.severity.HINT] = diagnostic.message,
-            }
-            return diagnostic_message[diagnostic.severity]
+        virtual_text = { source = 'if_many', spacing = 2 },
+        virtual_lines = false, -- switch to true for multi-line diagnostics
+        -- Auto-open float when jumping to a diagnostic with [d / ]d
+        jump = {
+          on_jump = function(_, bufnr)
+            vim.diagnostic.open_float { bufnr = bufnr, scope = 'cursor', focus = false }
           end,
         },
       }
 
-      -- Setup capabilities
-      --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
-      --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      -- blink.cmp registers its capabilities with core LSP automatically;
+      -- no manual capabilities merging needed.
 
       -- LSP Servers Configuration
       local servers = {
@@ -114,17 +106,35 @@ return {
         ts_ls = {},
         intelephense = {},
         lua_ls = {
+          on_init = function(client)
+            -- Let stylua handle formatting; disable lua_ls's own formatter
+            client.server_capabilities.documentFormattingProvider = false
+            if client.workspace_folders then
+              local path = client.workspace_folders[1].name
+              if path ~= vim.fn.stdpath 'config'
+                and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+              then
+                return
+              end
+            end
+            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua or {}, {
+              runtime = { version = 'LuaJIT' },
+              workspace = {
+                checkThirdParty = false,
+                library = { vim.env.VIMRUNTIME },
+              },
+            })
+          end,
           settings = {
             Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
+              completion = { callSnippet = 'Replace' },
+              format = { enable = false },
             },
           },
         },
       }
 
-      -- Tools to ensure installation
+      -- Tools to ensure installation via Mason (before adding non-Mason servers)
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Lua formatter
@@ -132,21 +142,24 @@ return {
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      -- Setup LSP servers
-      require('mason-lspconfig').setup {
-        ensure_installed = {},
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+      -- Non-Mason servers (installed via system packages on Arch)
+      if vim.fn.executable('haskell-language-server-wrapper') == 1 then
+        servers.hls = { filetypes = { 'haskell', 'lhaskell', 'cabal' } }
+      end
+      if vim.fn.executable('swipl') == 1 then
+        servers.prolog_ls = {
+          cmd = { 'swipl', '-g', 'use_module(library(lsp_server)).', '-g', 'lsp_server:main', '-t', 'halt', '--', 'stdio' },
+          filetypes = { 'prolog' },
+          root_markers = { '.git' },
+          settings = {},
+        }
+      end
 
-      -- Non-Mason LSP servers
-      vim.lsp.enable('prolog_ls')
+      -- Register & enable servers via the nvim 0.11 API
+      for name, server in pairs(servers) do
+        vim.lsp.config(name, server)
+        vim.lsp.enable(name)
+      end
     end,
   },
 

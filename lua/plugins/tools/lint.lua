@@ -12,6 +12,7 @@ return {
       python = { 'pylint' },
       javascript = { 'eslint_d' },
       typescript = { 'eslint_d' },
+      haskell = { 'hlint' },
     }
 
     -- Create autocommand for linting

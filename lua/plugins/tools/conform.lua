@@ -14,13 +14,21 @@ return {
       mode = '',
       desc = '[F]ormat buffer',
     },
+    {
+      '<leader>tf',
+      function()
+        vim.g.disable_autoformat = not vim.g.disable_autoformat
+        vim.notify('Format on save ' .. (vim.g.disable_autoformat and 'disabled' or 'enabled'))
+      end,
+      desc = '[T]oggle [F]ormat on save',
+    },
   },
   opts = {
     notify_on_error = false,
     format_on_save = function(bufnr)
-      -- Disable "format_on_save lsp_fallback" for languages that don't
-      -- have a well standardized coding style. You can add additional
-      -- languages here or re-enable it for the disabled ones.
+      if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+        return
+      end
       local disable_filetypes = { c = true, cpp = true, prolog = true }
       if disable_filetypes[vim.bo[bufnr].filetype] then
         return nil
@@ -44,6 +52,7 @@ return {
       json = { 'jq' },
       yaml = { 'yamlfmt' },
       markdown = { 'prettier' },
+      -- haskell: formatting handled by HLS (ormolu via LSP); no external binary
     },
   },
 }

@@ -2,50 +2,8 @@
 -- Collection of smaller utility plugins
 
 return {
-  -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
-
-  -- Comment.nvim - Easy commenting
-  {
-    'numToStr/Comment.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
-    opts = {},
-  },
-
-  -- Todo Comments - Highlight and search for todo comments
-  {
-    'folke/todo-comments.nvim',
-    event = 'VimEnter',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = {
-      signs = false,
-      keywords = {
-        FIX = { icon = ' ', color = 'error', alt = { 'FIXME', 'BUG', 'FIXIT', 'ISSUE' } },
-        TODO = { icon = ' ', color = 'info' },
-        HACK = { icon = ' ', color = 'warning' },
-        WARN = { icon = ' ', color = 'warning', alt = { 'WARNING', 'XXX' } },
-        PERF = { icon = ' ', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE' } },
-        NOTE = { icon = ' ', color = 'hint', alt = { 'INFO' } },
-        TEST = { icon = '⏲ ', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED' } },
-      },
-    },
-    keys = {
-      {
-        ']t',
-        function()
-          require('todo-comments').jump_next()
-        end,
-        desc = 'Next todo comment',
-      },
-      {
-        '[t',
-        function()
-          require('todo-comments').jump_prev()
-        end,
-        desc = 'Previous todo comment',
-      },
-    },
-  },
+  -- Detect tabstop and shiftwidth automatically (more modern than vim-sleuth)
+  { 'NMAC427/guess-indent.nvim', opts = {} },
 
   -- Undotree - Visualize undo history
   {
@@ -88,7 +46,11 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       -- Better Around/Inside textobjects
-      require('mini.ai').setup { n_lines = 500 }
+      -- around_next/inside_next remapped to avoid conflict with treesitter incremental selection (nvim>=0.12)
+      require('mini.ai').setup {
+        n_lines = 500,
+        mappings = { around_next = 'aa', inside_next = 'ii' },
+      }
 
       -- Add/delete/replace surroundings
       require('mini.surround').setup()
