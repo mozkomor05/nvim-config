@@ -60,6 +60,10 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>a',     group = '[A]rduino' },
       { '<leader><tab>', group = '[T]abs' },
       { 'gr',            group = 'LSP Actions' },
+      { '<leader>f',     desc = '[F]ormat buffer',        mode = { 'n', 'v' } },
+      { '<leader>u',     desc = 'Toggle [U]ndotree' },
+      { '<leader>q',     desc = 'Diagnostic loclist' },
+      { '<leader>Q',     desc = '[Q]uit all' },
     },
   },
 }

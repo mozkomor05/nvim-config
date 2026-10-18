@@ -5,8 +5,8 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Nerd Font
-vim.g.have_nerd_font = true
+-- Nerd Font (override per-machine in lua/config/machine-local.lua)
+vim.g.have_nerd_font = require('config.machine').opts.nerd_font
 
 -- Line Numbers
 vim.o.number = true
@@ -20,6 +20,9 @@ vim.o.showmode = false
 
 -- Colors
 vim.o.termguicolors = true
+
+-- Default border for all floating windows (hover, signature help, diagnostics)
+vim.o.winborder = 'rounded'
 
 -- In SSH, use OSC52 clipboard
 if os.getenv 'SSH_TTY' ~= nil then
@@ -40,7 +43,9 @@ vim.o.tabstop = 2
 
 -- Undo History
 vim.o.undofile = true
-local undodir = os.getenv 'HOME' .. '/.undodir'
+-- Undo history is machine-local, so it belongs in stdpath('state') rather than
+-- a synced $HOME dotfile directory.
+local undodir = vim.fs.joinpath(vim.fn.stdpath 'state', 'undo')
 vim.fn.mkdir(undodir, 'p')
 vim.o.undodir = undodir
 vim.o.undolevels = 10000
@@ -77,9 +82,11 @@ vim.o.sidescrolloff = 8
 vim.o.completeopt = 'menu,menuone,noinsert,noselect'
 vim.o.pumheight = 10 -- Max items in completion menu
 
--- Better search experience
-vim.o.grepprg = 'rg --vimgrep'
-vim.o.grepformat = '%f:%l:%c:%m'
+-- Better search experience (keep the built-in grep if ripgrep isn't installed)
+if vim.fn.executable 'rg' == 1 then
+  vim.o.grepprg = 'rg --vimgrep'
+  vim.o.grepformat = '%f:%l:%c:%m'
+end
 
 -- Quality of Life improvements
 vim.o.confirm = true -- Confirm to save changes before exiting modified buffer
@@ -93,12 +100,6 @@ vim.o.backup = false
 
 -- Better completion experience
 vim.o.shortmess = vim.o.shortmess .. 'c' -- Don't show completion messages
-
--- Performance
-vim.o.lazyredraw = false -- True to not redraw while executing macros (performance), False for better UX
-
--- File encoding
-vim.o.fileencoding = 'utf-8'
 
 -- Better formatting
 vim.o.formatoptions = 'jcroqlnt' -- tcqj

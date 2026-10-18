@@ -1,0 +1,22 @@
+-- Per-machine overrides. Copy to `lua/config/machine-local.lua` (gitignored).
+-- Every key is optional; without this file the config detects whatever tools
+-- happen to be installed and quietly skips the rest.
+
+return {
+  -- Set false if this machine's terminal font has no Nerd Font glyphs.
+  -- nerd_font = true,
+
+  -- Mason packages to install automatically on this machine.
+  -- Run `:MasonToolsInstall` after editing, or just `:Mason` and pick by hand.
+  -- Run `:ToolsMissing` to see what is configured but absent.
+  mason_ensure = {
+    'lua_ls',
+    'stylua',
+    -- 'clangd', 'gopls', 'pyright', 'rust_analyzer', 'ts_ls', 'intelephense',
+    -- 'black', 'isort', 'prettierd', 'yamlfmt',
+    -- 'pylint', 'eslint_d', 'markdownlint',
+  },
+
+  -- VimTeX PDF viewer. Unset probes for Skim (macOS) then zathura/sioyek/mupdf.
+  -- tex_viewer = 'zathura',
+}

@@ -131,3 +131,18 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
     vim.opt_local.conceallevel = 0
   end,
 })
+
+-- Warn once about tools the config genuinely depends on. Optional tooling
+-- (formatters, linters, language servers) is skipped silently by design;
+-- critical tools are not, because their absence looks like a broken config
+-- rather than a reduced one.
+vim.api.nvim_create_autocmd('VimEnter', {
+  desc = 'Report missing critical tools',
+  group = vim.api.nvim_create_augroup('critical-tools', { clear = true }),
+  callback = function()
+    local missing = require('config.machine').missing_critical()
+    if next(missing) then
+      vim.notify('Missing critical tools:\n' .. table.concat(missing, '\n'), vim.log.levels.WARN)
+    end
+  end,
+})

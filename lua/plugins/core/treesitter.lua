@@ -42,7 +42,8 @@ return {
       end,
     })
 
-    -- incremental selection (main-branch API uses manual keymaps)
-    vim.keymap.set('n', '<c-space>', function() vim.cmd 'normal! gn' end, { desc = 'TS: init selection' })
+    -- NOTE: incremental selection is built into Neovim >= 0.12 -- in visual mode use
+    -- `an`/`in` to grow/shrink by node and `]n`/`[n` to step between siblings.
+    -- See `:help treesitter-incremental-selection`.
   end,
 }

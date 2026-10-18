@@ -42,4 +42,20 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+  -- No luarocks/hererocks bootstrap; nothing here needs it
+  rocks = { enabled = false },
+  -- Don't nag about config files changing on disk
+  change_detection = { notify = false },
+  performance = {
+    rtp = {
+      -- Disable unused built-in plugins for a faster startup
+      disabled_plugins = {
+        'gzip',
+        'tarPlugin',
+        'tohtml',
+        'tutor',
+        'zipPlugin',
+      },
+    },
+  },
 })

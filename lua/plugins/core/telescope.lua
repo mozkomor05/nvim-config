@@ -14,7 +14,7 @@ return {
       end,
     },
     { 'nvim-telescope/telescope-ui-select.nvim' },
-    { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+    'nvim-mini/mini.nvim', -- icons (via MiniIcons.mock_nvim_web_devicons)
   },
   config = function()
     require('telescope').setup {
@@ -65,7 +65,8 @@ return {
 
     -- Search Neovim config files
     map('n', '<leader>sn', function()
-      builtin.find_files { cwd = vim.fn.stdpath 'config' }
+      -- follow = true so a symlinked config dir (dotfiles repo) still resolves
+      builtin.find_files { cwd = vim.fn.stdpath 'config', follow = true }
     end, { desc = '[S]earch [N]eovim files' })
 
     -- Git pickers

@@ -22,6 +22,7 @@ return {
         enabled = true,
       },
       which_key = true,
+      mini = { enabled = true },
       treesitter = true,
       fidget = true,
       gitsigns = true,

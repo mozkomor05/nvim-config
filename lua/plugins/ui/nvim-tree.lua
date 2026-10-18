@@ -4,7 +4,7 @@
 return {
   'nvim-tree/nvim-tree.lua',
   dependencies = {
-    'nvim-tree/nvim-web-devicons',
+    'nvim-mini/mini.nvim', -- icons (via MiniIcons.mock_nvim_web_devicons)
   },
   lazy = false,
   keys = {

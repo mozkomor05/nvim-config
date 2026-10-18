@@ -8,7 +8,10 @@ return {
     dependencies = {
       -- Automatically install LSPs and related tools
       { 'mason-org/mason.nvim', opts = {} },
-      'mason-org/mason-lspconfig.nvim',
+      -- Translates lspconfig server names <-> mason package names.
+      -- automatic_enable = false because we call vim.lsp.enable() ourselves below;
+      -- leaving it on would enable every installed server a second time.
+      { 'mason-org/mason-lspconfig.nvim', opts = { automatic_enable = false } },
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP
@@ -16,6 +19,8 @@ return {
 
     },
     config = function()
+      local machine = require 'config.machine'
+
       -- LSP Attach Handler
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
@@ -37,7 +42,7 @@ return {
 
           -- Document highlight on cursor hold
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -61,7 +66,7 @@ return {
           end
 
           -- Inlay hints toggle
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -118,7 +123,7 @@ return {
               end
             end
             client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua or {}, {
-              runtime = { version = 'LuaJIT' },
+              runtime = { version = 'LuaJIT', path = { 'lua/?.lua', 'lua/?/init.lua' } },
               workspace = {
                 checkThirdParty = false,
                 library = { vim.env.VIMRUNTIME },
@@ -134,32 +139,70 @@ return {
         },
       }
 
-      -- Tools to ensure installation via Mason (before adding non-Mason servers)
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Lua formatter
-      })
+      -- Mason installs only what THIS machine opted into (see lua/config/machine.lua).
+      -- Defaults to nothing: a fresh clone on a new machine downloads no servers.
+      -- Add them per-machine in machine-local.lua, or install by hand with `:Mason`.
+      require('mason-tool-installer').setup { ensure_installed = machine.opts.mason_ensure }
 
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-      -- Non-Mason servers (installed via system packages on Arch)
-      if vim.fn.executable('haskell-language-server-wrapper') == 1 then
+      -- Servers usually installed via system packages rather than Mason
+      if machine.have 'haskell-language-server-wrapper' then
         servers.hls = { filetypes = { 'haskell', 'lhaskell', 'cabal' } }
       end
-      if vim.fn.executable('swipl') == 1 then
+      if machine.have 'swipl' then
         servers.prolog_ls = {
           cmd = { 'swipl', '-g', 'use_module(library(lsp_server)).', '-g', 'lsp_server:main', '-t', 'halt', '--', 'stdio' },
           filetypes = { 'prolog' },
           root_markers = { '.git' },
+          on_init = function(client)
+            -- lsp_server's formatter corrupts files with non-ASCII text; diagnostics only
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end,
           settings = {},
         }
       end
 
-      -- Register & enable servers via the nvim 0.11 API
+      -- Some servers resolve `cmd` through a function, so it can't be probed
+      -- generically; name their executable explicitly here.
+      local server_bin = {
+        ts_ls = 'typescript-language-server',
+      }
+
+      --- Is this server's executable actually present on this machine?
+      ---@param name string
+      ---@return boolean
+      local function server_available(name)
+        local bin = server_bin[name]
+        if bin then
+          return machine.have(bin)
+        end
+        -- vim.lsp.config[name] is the spec merged with nvim-lspconfig's defaults
+        local cmd = (vim.lsp.config[name] or {}).cmd
+        if type(cmd) == 'table' and cmd[1] then
+          return machine.have(cmd[1])
+        end
+        -- Dynamic or unknown cmd: let Neovim decide at start time
+        return true
+      end
+
+      -- Register every server we know how to configure, but only enable the ones
+      -- whose binary exists. Enabling a missing server makes Neovim error out
+      -- ("command is not executable") every time you open a matching file.
+      local enabled, missing = {}, {}
       for name, server in pairs(servers) do
         vim.lsp.config(name, server)
-        vim.lsp.enable(name)
+        if server_available(name) then
+          vim.lsp.enable(name)
+          table.insert(enabled, name)
+        else
+          table.insert(missing, name)
+        end
       end
+      table.sort(enabled)
+      table.sort(missing)
+      -- Consumed by :ToolsMissing (see lua/config/autocmds.lua)
+      vim.g.lsp_enabled = enabled
+      vim.g.lsp_missing = missing
     end,
   },
 

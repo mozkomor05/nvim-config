@@ -44,7 +44,9 @@ map('n', 'J', 'mzJ`z', { desc = 'Join lines and restore cursor' })
 map({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save file' })
 
 -- Better quit
-map('n', '<leader>qq', '<cmd>qa<cr>', { desc = '[Q]uit all' })
+-- NOTE: <leader>q is the diagnostic loclist (above), so quit-all lives on <leader>Q
+-- to avoid a 'timeoutlen' pause every time you press <leader>q.
+map('n', '<leader>Q', '<cmd>qa<cr>', { desc = '[Q]uit all' })
 
 -- Window management
 map('n', '<leader>ww', '<C-W>p', { desc = 'Other [W]indow' })
