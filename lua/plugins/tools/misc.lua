@@ -3,7 +3,7 @@
 
 return {
   -- Detect tabstop and shiftwidth automatically (more modern than vim-sleuth)
-  { 'NMAC427/guess-indent.nvim', opts = {} },
+  { 'NMAC427/guess-indent.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} },
 
   -- Undotree - Visualize undo history
   {

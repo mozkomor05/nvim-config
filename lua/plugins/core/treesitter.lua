@@ -15,6 +15,8 @@ return {
     require('nvim-treesitter').install(parsers)
 
     local function try_attach(buf, lang)
+      -- The buffer may be gone by the time an async parser install finishes
+      if not vim.api.nvim_buf_is_valid(buf) then return end
       if not vim.treesitter.language.add(lang) then return end
       vim.treesitter.start(buf, lang)
       if vim.treesitter.query.get(lang, 'indents') ~= nil then

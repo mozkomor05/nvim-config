@@ -15,36 +15,28 @@ return {
       shade = 'dark',
       percentage = 0.15,
     },
+    -- Diagnostic styling now lives in the top-level `lsp_styles` table (the old
+    -- `integrations.native_lsp` block was removed upstream); its defaults are
+    -- italic virtual text + underlines, which is what this config used.
+    --
+    -- auto_integrations is off: on Neovim 0.12 it calls vim.pack.get(), which
+    -- creates an empty site/pack/core on every start (and makes :checkhealth
+    -- warn about it). The list below is exactly what auto-detection found;
+    -- add an entry here when you install a plugin catppuccin supports.
+    auto_integrations = false,
     integrations = {
-      blink_cmp = true,
-      nvimtree = true,
-      telescope = {
-        enabled = true,
-      },
-      which_key = true,
-      mini = { enabled = true },
-      treesitter = true,
+      blink_cmp = { enabled = true, style = 'bordered' },
+      dap = true,
+      dap_ui = true,
       fidget = true,
       gitsigns = true,
-      indent_blankline = {
-        enabled = true,
-        colored_indent_levels = false,
-      },
-      native_lsp = {
-        enabled = true,
-        virtual_text = {
-          errors = { 'italic' },
-          hints = { 'italic' },
-          warnings = { 'italic' },
-          information = { 'italic' },
-        },
-        underlines = {
-          errors = { 'underline' },
-          hints = { 'underline' },
-          warnings = { 'underline' },
-          information = { 'underline' },
-        },
-      },
+      indent_blankline = { enabled = true, colored_indent_levels = false },
+      mason = true,
+      mini = { enabled = true },
+      nvimtree = true,
+      telescope = { enabled = true },
+      treesitter = true,
+      which_key = true,
     },
   },
   config = function(_, opts)

@@ -2,12 +2,24 @@
 -- Language Server Protocol setup with mason, lspconfig, and additional tools
 
 return {
+  -- Mason is loaded eagerly (it is cheap on its own): its setup prepends the
+  -- Mason bin dir to $PATH, which treesitter (tree-sitter CLI), nvim-lint and
+  -- conform all probe, and it keeps `:Mason` available before any file is open.
+  { 'mason-org/mason.nvim', lazy = false, opts = {} },
+
   -- LSP Configuration
   {
     'neovim/nvim-lspconfig',
+    -- Load when a real file is opened; vim.lsp.enable() must run before the
+    -- buffer's FileType event, and BufReadPre/BufNewFile both precede it.
+    event = { 'BufReadPre', 'BufNewFile' },
+    cmd = {
+      'LspInfo', 'LspLog', 'LspStart', 'LspStop', 'LspRestart',
+      'MasonToolsInstall', 'MasonToolsInstallSync', 'MasonToolsUpdate', 'MasonToolsUpdateSync', 'MasonToolsClean',
+    },
     dependencies = {
       -- Automatically install LSPs and related tools
-      { 'mason-org/mason.nvim', opts = {} },
+      'mason-org/mason.nvim',
       -- Translates lspconfig server names <-> mason package names.
       -- automatic_enable = false because we call vim.lsp.enable() ourselves below;
       -- leaving it on would enable every installed server a second time.
@@ -17,6 +29,11 @@ return {
       -- Useful status updates for LSP
       { 'j-hui/fidget.nvim', opts = {} },
 
+      -- blink.cmp must be set up BEFORE any server starts: it registers its
+      -- completion capabilities via vim.lsp.config('*'). Without this, a file
+      -- given on the command line started its server with Neovim's default
+      -- capabilities, because blink only loaded later on VimEnter.
+      'saghen/blink.cmp',
     },
     config = function()
       local machine = require 'config.machine'
@@ -42,7 +59,7 @@ return {
 
           -- Document highlight on cursor hold
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
+          if client and client:supports_method('textDocument/documentHighlight', event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -66,7 +83,7 @@ return {
           end
 
           -- Inlay hints toggle
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+          if client and client:supports_method('textDocument/inlayHint', event.buf) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -98,8 +115,8 @@ return {
         },
       }
 
-      -- blink.cmp registers its capabilities with core LSP automatically;
-      -- no manual capabilities merging needed.
+      -- blink.cmp registers its capabilities with core LSP automatically (it is
+      -- a dependency above, so it is set up first); no manual merging needed.
 
       -- LSP Servers Configuration
       local servers = {

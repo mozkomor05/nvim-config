@@ -5,6 +5,7 @@ return {
   -- Gitsigns - Git decorations
   {
     'lewis6991/gitsigns.nvim',
+    event = { 'BufReadPre', 'BufNewFile' },
     opts = {
       on_attach = function(bufnr)
         local gitsigns = require 'gitsigns'
@@ -46,15 +47,25 @@ return {
         map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'git [S]tage buffer' })
         map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'git [R]eset buffer' })
         map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'git [p]review hunk' })
-        map('n', '<leader>hb', gitsigns.blame_line, { desc = 'git [b]lame line' })
+        map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = 'git preview hunk [i]nline' })
+        map('n', '<leader>hb', function()
+          gitsigns.blame_line { full = true }
+        end, { desc = 'git [b]lame line' })
         map('n', '<leader>hd', gitsigns.diffthis, { desc = 'git [d]iff against index' })
         map('n', '<leader>hD', function()
           gitsigns.diffthis '@'
         end, { desc = 'git [D]iff against last commit' })
+        map('n', '<leader>hq', gitsigns.setqflist, { desc = 'git hunk [q]uickfix list (this file)' })
+        map('n', '<leader>hQ', function()
+          gitsigns.setqflist 'all'
+        end, { desc = 'git hunk [Q]uickfix list (whole repo)' })
         -- Toggles
         map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
-        map('n', '<leader>tD', gitsigns.toggle_deleted, { desc = '[T]oggle git show [D]eleted' })
+        -- toggle_deleted() is deprecated upstream in favour of preview_hunk_inline (<leader>hi)
+        map('n', '<leader>tD', gitsigns.preview_hunk_inline, { desc = '[T]oggle git show [D]eleted (inline hunk preview)' })
         map('n', '<leader>tW', gitsigns.toggle_word_diff, { desc = '[T]oggle git [W]ord diff' })
+        -- Text object
+        map({ 'o', 'x' }, 'ih', gitsigns.select_hunk, { desc = 'git [i]nside [h]unk' })
       end,
     },
   },

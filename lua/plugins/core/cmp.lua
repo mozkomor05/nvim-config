@@ -3,7 +3,9 @@
 
 return {
   'saghen/blink.cmp',
-  event = 'VimEnter',
+  -- Loaded on first insert/cmdline, or earlier by nvim-lspconfig (which lists it
+  -- as a dependency so its LSP capabilities are registered before servers start)
+  event = { 'InsertEnter', 'CmdlineEnter' },
   version = '1.*',
   dependencies = {
     -- Snippet engine

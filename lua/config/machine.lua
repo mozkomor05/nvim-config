@@ -48,6 +48,8 @@ M.critical = {
   { bins = { 'git' }, why = 'lazy.nvim cannot install or update plugins' },
   { bins = { 'rg' }, why = 'telescope live_grep and grep_string return nothing' },
   { bins = { 'cc', 'gcc', 'clang' }, why = 'nvim-treesitter cannot build parsers' },
+  -- nvim-treesitter (main) builds parsers with the tree-sitter CLI; `:MasonInstall tree-sitter-cli`
+  { bins = { 'tree-sitter' }, why = 'nvim-treesitter cannot build parsers (needs tree-sitter CLI)' },
 }
 
 --- Critical tools that are absent, as human-readable lines.
@@ -87,10 +89,10 @@ end
 -- Report configured-but-absent tooling. Optional tools are skipped silently at
 -- runtime, so this is how you find out what a new machine is missing.
 vim.api.nvim_create_user_command('ToolsMissing', function()
-  -- conform and nvim-lint are lazy-loaded; without this the report is empty
+  -- lspconfig, conform and nvim-lint are lazy-loaded; without this the report is empty
   -- until a file has been opened.
   pcall(function()
-    require('lazy').load { plugins = { 'conform.nvim', 'nvim-lint' } }
+    require('lazy').load { plugins = { 'nvim-lspconfig', 'conform.nvim', 'nvim-lint' } }
   end)
 
   local lines = {}
